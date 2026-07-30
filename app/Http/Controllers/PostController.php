@@ -16,7 +16,7 @@ class PostController extends Controller
     {
         $posts = Post::with(['user', 'likes', 'comments.user'])
                     ->latest()
-                    ->get();
+                    ->paginate(5);
 
         return view('posts.index', compact('posts'));
     }
@@ -36,7 +36,7 @@ class PostController extends Controller
     {
         $request->validate([
             'caption' => 'nullable|string|max:1000',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:3072',
         ]);
 
         $imagePath = $request->file('image')->store('posts', 'public');
@@ -56,6 +56,12 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $post->load([
+        'user',
+        'likes',
+        'comments.user'
+    ]);
+    
          return view('posts.show', compact('post'));
     }
 

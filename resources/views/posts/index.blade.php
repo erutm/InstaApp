@@ -1,22 +1,26 @@
 <x-app-layout>
 
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
             {{ __('InstaApp') }}
         </h2>
     </x-slot>
 
-    <div class="py-6">
+    <div class="py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
             @if(session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                <div class="mb-5 rounded-lg bg-green-100 border border-green-300 text-green-700 px-4 py-3">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <!-- Form Upload -->
-            <div class="bg-white shadow rounded-lg p-6 mb-6">
+            {{-- Form Upload --}}
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+
+                <h3 class="text-lg font-semibold mb-4">
+                    Buat Postingan
+                </h3>
 
                 <form action="{{ route('posts.store') }}"
                       method="POST"
@@ -26,32 +30,34 @@
 
                     <div class="mb-4">
 
-                        <label class="block font-medium">
+                        <label class="font-medium">
                             Caption
                         </label>
 
                         <textarea
                             name="caption"
-                            class="w-full border rounded mt-2"
-                            rows="3"></textarea>
+                            rows="3"
+                            class="w-full border rounded-lg mt-2 p-3"
+                            placeholder="Apa yang sedang Anda pikirkan?"></textarea>
 
                     </div>
 
                     <div class="mb-4">
 
-                        <label class="block font-medium">
+                        <label class="font-medium">
                             Upload Gambar
                         </label>
 
                         <input
                             type="file"
                             name="image"
-                            class="mt-2">
+                            class="block mt-2">
 
                     </div>
 
                     <button
-                        class="bg-blue-500 text-white px-4 py-2 rounded">
+                        type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg">
 
                         Posting
 
@@ -61,202 +67,195 @@
 
             </div>
 
-            <!-- Daftar Post -->
-
+            {{-- Feed --}}
             @forelse($posts as $post)
 
-                <div class="bg-white shadow rounded-lg p-6 mb-6">
+                <div class="bg-white rounded-xl shadow-md mb-8 overflow-hidden">
 
-                    <h3 class="font-bold">
+                    {{-- Header --}}
+                    <div class="p-5">
 
-                        {{ $post->user->name }}
+                        <h3 class="font-bold text-lg">
 
-                    </h3>
+                            {{ $post->user->name }}
 
-                    <p class="text-gray-500 text-sm">
+                        </h3>
 
-                        {{ $post->created_at->diffForHumans() }}
+                        <p class="text-sm text-gray-500">
 
-                    </p>
+                            {{ $post->created_at->diffForHumans() }}
 
+                        </p>
+
+                    </div>
+
+                    {{-- Gambar --}}
                     <img
                         src="{{ asset('storage/'.$post->image) }}"
-                        class="mt-4 rounded-lg w-full">
+                        class="w-full object-cover max-h-[600px]">
 
-                    <p class="mt-4">
+                    {{-- Caption --}}
+                    <div class="p-5">
 
-                        {{ $post->caption }}
+                        <p class="text-gray-800">
 
-                    </p>
+                            {{ $post->caption }}
 
-                        <div class="mt-4 flex items-center gap-3">
+                        </p>
+
+                    </div>
+
+                    {{-- Like --}}
+                    <div class="px-5 pb-2">
 
                         @if($post->likes()->where('user_id', auth()->id())->exists())
 
-                            <form action="{{ route('posts.unlike', $post) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-
-                            <button class="text-2xl hover:scale-110 transition">
-                                ❤️
-                            </button>
-                            </form>
-
-                        @else
-
-                            <form action="{{ route('posts.like', $post) }}" method="POST">
-                            @csrf
-
-                            <button class="text-2xl hover:scale-110 transition">
-                                🤍
-                            </button>
-                            </form>
-
-                        @endif
-
-                        <span class="text-gray-600">
-                            {{ $post->likes->count() }} Like
-                        </span>
-
-                        <span class="text-gray-600">
-                            {{ $post->comments->count() }} Komentar
-                        </span>
-
-                        </div>
-
-                        <hr class="my-4">
-
-                            <div class="flex items-center justify-between mb-3">
-                                <h4 class="font-semibold">
-                                    Komentar
-                                </h4>
-
-                            <span class="text-sm text-gray-500">
-                                    {{ $post->comments->count() }} Komentar
-                            </span>
-                            </div>
-
-                            @forelse($post->comments as $comment)
-
-                            <div class="flex justify-between items-center border-b py-2">
-
-                                <div>
-                                    <span class="font-semibold">
-                                    {{ $comment->user->name }}
-                                    </span>
-
-                                    <span class="text-gray-700">
-                                    {{ $comment->comment }}
-                                    </span>
-                                </div>
-
-                            @if(Auth::id() == $comment->user_id)
-
-                                <form action="{{ route('comments.destroy', $comment) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('Hapus komentar ini?')">
+                            <form action="{{ route('posts.unlike',$post) }}"
+                                  method="POST">
 
                                 @csrf
                                 @method('DELETE')
 
-                                <button
-                                    class="text-red-500 text-sm hover:text-red-700">
+                                <button class="text-2xl hover:scale-110 transition">
 
-                                Hapus
+                                    ❤️
 
                                 </button>
 
-                                </form>
+                            </form>
 
-                                @endif
+                        @else
 
-                            </div>
-
-                            @empty
-
-                            <p class="text-gray-500">
-                                Belum ada komentar.
-                            </p>
-
-                            @endforelse
-
-                            <form action="{{ route('comments.store', $post) }}"
-                                method="POST"
-                                class="mt-4">
+                            <form action="{{ route('posts.like',$post) }}"
+                                  method="POST">
 
                                 @csrf
 
-                            <div class="flex gap-2">
+                                <button class="text-2xl hover:scale-110 transition">
 
-                            <input
-                                type="text"
-                                name="comment"
-                                placeholder="Tulis komentar..."
-                                class="border rounded px-3 py-2 w-full"
-                                required>
+                                    🤍
 
-                            <button
-                                type="submit"
-                                class="bg-blue-500 text-white px-4 rounded hover:bg-blue-600">
-
-                                Kirim
-
-                            </button>
-
-                            </div>
-
-                            @error('comment')
-                            <p class="text-red-500 text-sm mt-2">
-                                {{ $message }}
-                            </p>
-                            @enderror
+                                </button>
 
                             </form>
 
+                        @endif
+
+                    </div>
+
+                    {{-- Statistik --}}
+                    <div class="px-5 text-sm text-gray-600">
+
+                        <span class="font-medium">
+                            ❤️ {{ $post->likes->count() }} Like
+                        </span>
+
+                        <span class="mx-3">•</span>
+
+                        <a
+                            href="{{ route('posts.show',$post) }}"
+                            class="hover:text-blue-600">
+
+                            💬 {{ $post->comments->count() }} Komentar
+
+                        </a>
+
+                    </div>
+
+                    {{-- Preview komentar --}}
+                    <div class="px-5 mt-4">
+
+                        @if($post->comments->count())
+
+                            @php
+                                $lastComment = $post->comments->last();
+                            @endphp
+
+                            <p>
+
+                                <span class="font-semibold">
+
+                                    {{ $lastComment->user->name }}
+
+                                </span>
+
+                                {{ $lastComment->comment }}
+
+                            </p>
+
+                        @endif
+
+                        @if($post->comments->count() > 1)
+
+                            <a
+                                href="{{ route('posts.show',$post) }}"
+                                class="text-gray-500 text-sm hover:underline">
+
+                                Lihat semua {{ $post->comments->count() }} komentar
+
+                            </a>
+
+                        @endif
+
+                    </div>
+
+                    {{-- Tombol --}}
+                    <div class="flex gap-2 p-5">
+
+                        <a
+                            href="{{ route('posts.show',$post) }}"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+
+                            Detail
+
+                        </a>
+
                         @if(Auth::id() == $post->user_id)
 
-                        <div class="mt-4 flex gap-2">
-
-                            <a href="{{ route('posts.edit',$post) }}"
-                                class="bg-yellow-500 text-white px-3 py-1 rounded">
+                            <a
+                                href="{{ route('posts.edit',$post) }}"
+                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
 
                                 Edit
 
                             </a>
 
-                            <form action="{{ route('posts.destroy',$post) }}"
+                            <form
+                                action="{{ route('posts.destroy',$post) }}"
                                 method="POST"
                                 onsubmit="return confirm('Yakin ingin menghapus postingan?')">
 
-                            @csrf
-                            @method('DELETE')
+                                @csrf
+                                @method('DELETE')
 
-                            <button
-                                class="bg-red-600 text-white px-3 py-1 rounded">
+                                <button
+                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
 
-                                Hapus
+                                    Hapus
 
-                            </button>
+                                </button>
 
                             </form>
 
-                        </div>
-
                         @endif
 
-                    </p>
+                    </div>
 
                 </div>
 
             @empty
 
-                <div class="bg-white p-6 rounded shadow">
+                <div class="bg-white rounded-xl shadow-md p-6 text-center text-gray-500">
 
                     Belum ada postingan.
 
                 </div>
 
             @endforelse
+
+            <div class="mt-8">
+                {{ $posts->links() }}
+            </div>
 
         </div>
     </div>
