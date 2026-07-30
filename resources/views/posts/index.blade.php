@@ -87,6 +87,37 @@
 
                         {{ $post->caption }}
 
+                        <div class="mt-4 flex items-center gap-3">
+
+                        @if($post->likes()->where('user_id', auth()->id())->exists())
+
+                            <form action="{{ route('posts.unlike', $post) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+
+                            <button class="text-2xl hover:scale-110 transition">
+                                ❤️
+                            </button>
+                            </form>
+
+                        @else
+
+                            <form action="{{ route('posts.like', $post) }}" method="POST">
+                            @csrf
+
+                            <button class="text-2xl hover:scale-110 transition">
+                                🤍
+                            </button>
+                            </form>
+
+                        @endif
+
+                        <span class="text-gray-600">
+                            {{ $post->likes->count() }} Like
+                        </span>
+
+                        </div>
+
                         @if(Auth::id() == $post->user_id)
 
                         <div class="mt-4 flex gap-2">

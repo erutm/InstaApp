@@ -17,6 +17,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::resource('posts', PostController::class);
+    
     Route::post('/posts/{post}/like', [LikeController::class, 'store'])
         ->name('posts.like');
 
