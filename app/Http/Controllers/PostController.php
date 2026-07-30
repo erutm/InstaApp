@@ -14,7 +14,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with(['user', 'likes', 'comments'])
+        $posts = Post::with(['user', 'likes', 'comments.user'])
                     ->latest()
                     ->get();
 

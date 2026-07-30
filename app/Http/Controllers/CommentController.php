@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -26,9 +28,19 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Post $post)
     {
-        //
+        $request->validate([
+            'comment' => 'required|string|max:500',
+        ]);
+
+        Comment::create([
+            'user_id' => Auth::id(),
+            'post_id' => $post->id,
+            'comment' => $request->comment,
+        ]);
+
+        return back()->with('success', 'Komentar berhasil ditambahkan.');
     }
 
     /**
@@ -60,6 +72,12 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        if ($comment->user_id != Auth::id()) {
+            abort(403, 'Anda tidak memiliki hak menghapus komentar ini.');
+        }
+
+        $comment->delete();
+
+        return back()->with('success', 'Komentar berhasil dihapus.');
     }
 }

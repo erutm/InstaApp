@@ -87,6 +87,8 @@
 
                         {{ $post->caption }}
 
+                    </p>
+
                         <div class="mt-4 flex items-center gap-3">
 
                         @if($post->likes()->where('user_id', auth()->id())->exists())
@@ -116,7 +118,100 @@
                             {{ $post->likes->count() }} Like
                         </span>
 
+                        <span class="text-gray-600">
+                            {{ $post->comments->count() }} Komentar
+                        </span>
+
                         </div>
+
+                        <hr class="my-4">
+
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="font-semibold">
+                                    Komentar
+                                </h4>
+
+                            <span class="text-sm text-gray-500">
+                                    {{ $post->comments->count() }} Komentar
+                            </span>
+                            </div>
+
+                            @forelse($post->comments as $comment)
+
+                            <div class="flex justify-between items-center border-b py-2">
+
+                                <div>
+                                    <span class="font-semibold">
+                                    {{ $comment->user->name }}
+                                    </span>
+
+                                    <span class="text-gray-700">
+                                    {{ $comment->comment }}
+                                    </span>
+                                </div>
+
+                            @if(Auth::id() == $comment->user_id)
+
+                                <form action="{{ route('comments.destroy', $comment) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Hapus komentar ini?')">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button
+                                    class="text-red-500 text-sm hover:text-red-700">
+
+                                Hapus
+
+                                </button>
+
+                                </form>
+
+                                @endif
+
+                            </div>
+
+                            @empty
+
+                            <p class="text-gray-500">
+                                Belum ada komentar.
+                            </p>
+
+                            @endforelse
+
+                            <form action="{{ route('comments.store', $post) }}"
+                                method="POST"
+                                class="mt-4">
+
+                                @csrf
+
+                            <div class="flex gap-2">
+
+                            <input
+                                type="text"
+                                name="comment"
+                                placeholder="Tulis komentar..."
+                                class="border rounded px-3 py-2 w-full"
+                                required>
+
+                            <button
+                                type="submit"
+                                class="bg-blue-500 text-white px-4 rounded hover:bg-blue-600">
+
+                                Kirim
+
+                            </button>
+
+                            </div>
+
+                            @error('comment')
+                            <p class="text-red-500 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                            @enderror
+
+                            </form>
 
                         @if(Auth::id() == $post->user_id)
 
