@@ -243,7 +243,7 @@
 
                         <a
                             href="{{ route('posts.show',$post) }}"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                            class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
 
                             Lihat Detail
 
@@ -253,7 +253,7 @@
 
                             <a
                                 href="{{ route('posts.edit',$post) }}"
-                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
+                                class="bg-yellow-400 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
 
                                 Edit
 
@@ -268,7 +268,7 @@
                                 @method('DELETE')
 
                                 <button
-                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+                                    class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
 
                                     Hapus
 

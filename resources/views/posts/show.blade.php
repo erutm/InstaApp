@@ -15,19 +15,19 @@
                 </div>
             @endif
 
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                
+            <!-- Header -->
+                <div class="flex items-center gap-3 p-5">
 
-                {{-- Header --}}
-                <div class="flex items-center gap-4 p-6 border-b">
-
-                    <div class="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
+                    <div class="w-11 h-11 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
                         {{ strtoupper(substr($post->user->name,0,1)) }}
                     </div>
 
                     <div>
-                        <h2 class="font-bold text-lg">
+                        <h3 class="font-bold">
                             {{ $post->user->name }}
-                        </h2>
+                        </h3>
 
                         <p class="text-sm text-gray-500">
                             {{ $post->created_at->diffForHumans() }}
@@ -36,22 +36,23 @@
 
                 </div>
 
-                {{-- Gambar --}}
+                <!-- Gambar -->
                 <img
                     src="{{ asset('storage/'.$post->image) }}"
-                    class="w-full object-cover max-h-[650px]">
+                    alt="Post"
+                    class="w-full max-h-[600px] object-contain bg-gray-100">
 
-                {{-- Caption --}}
-                <div class="p-6">
+                <!-- Caption -->
+                <div class="px-5 py-4">
 
-                    <p class="text-lg text-gray-800 leading-relaxed">
+                    <p class="text-gray-700 leading-relaxed">
                         {{ $post->caption }}
                     </p>
 
                 </div>
 
-                {{-- Like --}}
-                <div class="px-6 flex items-center gap-5">
+                <!-- Like -->
+                <div class="flex items-center gap-6 px-5 py-3 border-t border-gray-100">
 
                     @if($post->likes()->where('user_id',auth()->id())->exists())
 
@@ -59,7 +60,7 @@
                             @csrf
                             @method('DELETE')
 
-                            <button class="text-3xl hover:scale-110 transition">
+                            <button class="text-2xl hover:scale-110 transition">
                                 ❤️
                             </button>
 
@@ -70,7 +71,7 @@
                         <form action="{{ route('posts.like',$post) }}" method="POST">
                             @csrf
 
-                            <button class="text-3xl hover:scale-110 transition">
+                            <button class="text-2xl hover:scale-110 transition">
                                 🤍
                             </button>
 
@@ -78,22 +79,32 @@
 
                     @endif
 
-                    <span class="font-medium text-gray-700">
-                        ❤️ {{ $post->likes->count() }} Like
+                    <span class="flex items-center gap-2 text-gray-700">
+                        ❤️ 
+                        
+                        <strong>{{ $post->likes->count() }}</strong>
+
+                        Like
+
                     </span>
 
-                    <span class="font-medium text-gray-700">
-                        💬 {{ $post->comments->count() }} Komentar
+                    <span class="flex items-center gap-2 text-gray-700">
+                        💬 
+                        
+                        <strong>{{ $post->comments->count() }}</strong>
+                        
+                        Komentar
+
                     </span>
 
                 </div>
 
                 <hr class="my-6">
 
-                {{-- Komentar --}}
-                <div class="px-6">
+                <!-- Komentar -->
+                <div class="px-5 pb-5">
 
-                    <h3 class="text-xl font-semibold mb-5">
+                    <h3 class="font-semibold text-lg mb-4">
                         Komentar
                     </h3>
 
@@ -101,9 +112,9 @@
 
                         <div class="flex justify-between items-start border-b py-4">
 
-                            <div class="flex gap-3 flex-1">
+                            <div class="flex gap-3">
 
-                                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold">
+                                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center font-semibold">
 
                                     {{ strtoupper(substr($comment->user->name,0,1)) }}
 
@@ -131,14 +142,13 @@
 
                                 <form
                                     action="{{ route('comments.destroy',$comment) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('Hapus komentar ini?')">
+                                    method="POST">
 
                                     @csrf
                                     @method('DELETE')
 
                                     <button
-                                        class="text-red-500 hover:text-red-700 text-sm">
+                                        class="text-red-500 hover:text-red-700">
 
                                         Hapus
 
@@ -152,7 +162,7 @@
 
                     @empty
 
-                        <div class="text-center text-gray-500 py-6">
+                        <div class="text-center text-gray-500 py-5">
 
                             Belum ada komentar.
 
@@ -162,8 +172,8 @@
 
                 </div>
 
-                {{-- Form Komentar --}}
-                <div class="px-6 py-6 border-t">
+                <!-- Form Komentar -->
+                <div class="border-t px-5 py-5">
 
                     <form
                         action="{{ route('comments.store',$post) }}"
@@ -176,13 +186,13 @@
                             <input
                                 type="text"
                                 name="comment"
-                                class="flex-1 border rounded-lg px-4 py-3"
+                                class="flex-1 rounded-xl border-gray-300"
                                 placeholder="Tulis komentar..."
                                 required>
 
                             <button
                                 type="submit"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg">
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded-xl">
 
                                 Kirim
 
@@ -204,24 +214,24 @@
 
                 </div>
 
-                {{-- Tombol --}}
-                <div class="flex justify-between items-center px-6 py-6 border-t">
+                <!-- Tombol -->
+                <div class="border-t px-5 py-5 flex justify-between">
 
                     <a
                         href="{{ route('posts.index') }}"
-                        class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+                        class="bg-gray-500 hover:bg-gray-700 text-white px-5 py-2 rounded-xl">
 
-                        ← Kembali
+                        Kembali
 
                     </a>
 
                     @if(Auth::id() == $post->user_id)
 
-                        <div class="flex gap-3">
+                        <div class="flex gap-2">
 
                             <a
                                 href="{{ route('posts.edit',$post) }}"
-                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg">
+                                class="bg-yellow-400 hover:bg-yellow-600 text-white px-5 py-2 rounded-xl">
 
                                 Edit
 
@@ -236,7 +246,7 @@
                                 @method('DELETE')
 
                                 <button
-                                    class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg">
+                                    class="bg-red-500 hover:bg-red-700 text-white px-5 py-2 rounded-xl">
 
                                     Hapus
 
