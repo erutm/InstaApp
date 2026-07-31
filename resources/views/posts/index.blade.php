@@ -15,89 +15,119 @@
                 </div>
             @endif
 
-            {{-- Form Upload --}}
-            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <!-- Form Upload -->
+            <div
+    x-data="{ imageUrl: null }"
+    class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
 
-                <h3 class="text-lg font-semibold mb-4">
-                    Buat Postingan
-                </h3>
+    <h3 class="text-xl font-bold mb-5">
+        Buat Postingan Baru
+    </h3>
 
-                <form action="{{ route('posts.store') }}"
-                      method="POST"
-                      enctype="multipart/form-data">
+    <form action="{{ route('posts.store') }}"
+          method="POST"
+          enctype="multipart/form-data">
 
-                    @csrf
+        @csrf
 
-                    <div class="mb-4">
+        <div class="mb-4">
 
-                        <label class="font-medium">
-                            Caption
-                        </label>
+            <label class="font-medium">
+                Caption
+            </label>
 
-                        <textarea
-                            name="caption"
-                            rows="3"
-                            class="w-full border rounded-lg mt-2 p-3"
-                            placeholder="Apa yang sedang Anda pikirkan?"></textarea>
+            <textarea
+                name="caption"
+                rows="3"
+                placeholder="Apa yang sedang Anda pikirkan?"
+                class="w-full mt-2 rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500">{{ old('caption') }}</textarea>
 
-                    </div>
+        </div>
 
-                    <div class="mb-4">
+        <div class="mb-4">
 
-                        <label class="font-medium">
-                            Upload Gambar
-                        </label>
+            <label class="font-medium">
+                Upload Gambar
+            </label>
 
-                        <input
-                            type="file"
-                            name="image"
-                            class="block mt-2">
+            <input
+                type="file"
+                name="image"
+                accept="image/*"
+                class="block w-full mt-2"
+                @change="imageUrl = URL.createObjectURL($event.target.files[0])">
 
-                    </div>
+        </div>
 
-                    <button
-                        type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg">
+        {{-- Preview --}}
 
-                        Posting
+        <template x-if="imageUrl">
 
-                    </button>
+            <div class="mb-4">
 
-                </form>
+                <img
+                    :src="imageUrl"
+                    class="rounded-xl max-h-96 mx-auto shadow">
 
             </div>
 
-            {{-- Feed --}}
+        </template>
+
+        <button
+            type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl">
+
+            Posting Sekarang
+
+        </button>
+
+    </form>
+
+</div>
+
+            <!-- Feed -->
             @forelse($posts as $post)
 
-                <div class="bg-white rounded-xl shadow-md mb-8 overflow-hidden">
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden mb-8">
 
-                    {{-- Header --}}
-                    <div class="p-5">
+                    <!-- Header -->
+                    <div class="flex items-center gap-3 p-5">
+                    
+                    <div
+                    class="w-11 h-11 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
 
-                        <h3 class="font-bold text-lg">
+                        {{ strtoupper(substr($post->user->name,0,1)) }}
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="font-bold">
 
                             {{ $post->user->name }}
 
                         </h3>
 
-                        <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500">
 
-                            {{ $post->created_at->diffForHumans() }}
+                        {{ $post->created_at->diffForHumans() }}
 
-                        </p>
+                    </p>
 
                     </div>
 
-                    {{-- Gambar --}}
+                </div>
+
+                    <!-- Gambar -->
                     <img
                         src="{{ asset('storage/'.$post->image) }}"
-                        class="w-full object-cover max-h-[600px]">
+                        alt="Post Image"
+                        class="w-full max-h-[550px] object-contain bg-gray-100">
 
-                    {{-- Caption --}}
+                    <!-- Caption -->
                     <div class="p-5">
 
-                        <p class="text-gray-800">
+                        <p class="text-gray-700 leading-relaxed text-[15px]">
 
                             {{ $post->caption }}
 
@@ -105,7 +135,7 @@
 
                     </div>
 
-                    {{-- Like --}}
+                    <!-- Like -->
                     <div class="px-5 pb-2">
 
                         @if($post->likes()->where('user_id', auth()->id())->exists())
@@ -143,27 +173,35 @@
 
                     </div>
 
-                    {{-- Statistik --}}
-                    <div class="px-5 text-sm text-gray-600">
+                    <!-- Statistik  -->
+                    <div class="flex items-center gap-6 px-5 py-3 border-t border-gray-100">
 
-                        <span class="font-medium">
-                            ❤️ {{ $post->likes->count() }} Like
-                        </span>
+                    <span class="flex items-center gap-2 text-gray-700">
 
-                        <span class="mx-3">•</span>
+                        ❤️
 
-                        <a
-                            href="{{ route('posts.show',$post) }}"
-                            class="hover:text-blue-600">
+                    <strong>{{ $post->likes->count() }}</strong>
 
-                            💬 {{ $post->comments->count() }} Komentar
+                        Like
 
-                        </a>
+                    </span>
+
+                    <a
+                        href="{{ route('posts.show',$post) }}"
+                        class="flex items-center gap-2 text-gray-700 hover:text-blue-600">
+
+                        💬
+
+                    <strong>{{ $post->comments->count() }}</strong>
+
+                        Komentar
+
+                    </a>
 
                     </div>
 
-                    {{-- Preview komentar --}}
-                    <div class="px-5 mt-4">
+                    <!-- Preview komentar -->
+                    <div class="px-5 pb-5">
 
                         @if($post->comments->count())
 
@@ -171,7 +209,7 @@
                                 $lastComment = $post->comments->last();
                             @endphp
 
-                            <p>
+                            <p class="mt-2">
 
                                 <span class="font-semibold">
 
@@ -189,7 +227,7 @@
 
                             <a
                                 href="{{ route('posts.show',$post) }}"
-                                class="text-gray-500 text-sm hover:underline">
+                                class="text-gray-500 text-sm hover:text-blue-600">
 
                                 Lihat semua {{ $post->comments->count() }} komentar
 
@@ -199,14 +237,15 @@
 
                     </div>
 
-                    {{-- Tombol --}}
+                    <!-- Tombol -->
+                    <div class="flex gap-2 px-5 py-5 border-t border-gray-100"> </div>
                     <div class="flex gap-2 p-5">
 
                         <a
                             href="{{ route('posts.show',$post) }}"
                             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
 
-                            Detail
+                            Lihat Detail
 
                         </a>
 
@@ -245,13 +284,21 @@
 
             @empty
 
-                <div class="bg-white rounded-xl shadow-md p-6 text-center text-gray-500">
+                <div class="bg-white rounded-2xl shadow-lg p-10 text-center">
 
-                    Belum ada postingan.
+                    <div class="text-6xl">
 
-                </div>
+                        📷
 
-            @endforelse
+                    </div>
+
+                    <h2 class="text-2xl font-bold mt-4">
+
+                        Belum ada postingan
+
+                    </h2>
+
+                @endforelse
 
             <div class="mt-8">
                 {{ $posts->links() }}
